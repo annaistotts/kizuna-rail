@@ -1,4 +1,4 @@
-import { generateConfirmationCode } from '../includes/helpers.js';
+import { generateConfirmationCode, monthNumberToAbbr, yenToUsd } from '../includes/helpers.js';
 import { getDb as db } from './db-in-file.js';
 
 // ROUTE MODEL FUNCTIONS
@@ -147,6 +147,7 @@ export const getCompleteRouteDetails = async (routeId) => {
 
     return {
         ...route,
+        operatingMonths: route.operatingMonths.map(monthNumberToAbbr),
         startStationDetails: startStation,
         endStationDetails: endStation,
         schedules: routeSchedules
@@ -169,7 +170,7 @@ export const getTicketOptionsForRoute = async (routeId) => {
     return db().ticketClasses.map(tc => ({
         class: tc.class,
         name: tc.name,
-        price: route.distance * tc.pricePerKm,
+        price: Number(yenToUsd(route.distance * tc.pricePerKm).toFixed(2)),
         amenities: tc.amenities,
         description: tc.description
     }));
